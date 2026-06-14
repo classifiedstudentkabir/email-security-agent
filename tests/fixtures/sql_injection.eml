@@ -1,0 +1,64 @@
+From: security_researcher@protonmail.com
+To: security@targetcompany.com
+Subject: SQL Injection Vulnerability Found in Login Form
+Date: Mon, 09 Jun 2025 14:22:07 +0000
+Message-ID: <20250609142207.sql001@protonmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hello Security Team,
+
+I am writing to report a critical SQL Injection vulnerability I discovered in
+your login endpoint at /api/login. This vulnerability allows an unauthenticated
+attacker to bypass authentication or extract data from your database.
+
+## Vulnerability Details
+
+**Type:** SQL Injection (Classic / Error-based)
+**Endpoint:** POST /api/login
+**Parameter:** username
+**Severity:** HIGH
+**CVSS Score:** 8.6 (AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N)
+
+## Steps to Reproduce
+
+1. Navigate to your login page at https://app.targetcompany.com/login
+2. In the username field, enter the following payload:
+   ' OR '1'='1' --
+3. Enter any value in the password field
+4. Click Submit
+
+The server returns a 200 OK with a valid session token, bypassing authentication entirely.
+
+Additionally, the following time-based blind injection confirms the back-end is MySQL:
+   ' AND SLEEP(5) --
+
+The application responded with a 5-second delay, confirming injectable behaviour.
+
+## Impact
+
+An attacker can:
+- Authenticate as any user including administrators
+- Extract the full users table with: ' UNION SELECT username, password FROM users --
+- Modify or delete records
+
+## Recommended Fix
+
+Use parameterised queries (prepared statements) throughout your data layer.
+Example (Python/SQLAlchemy):
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+
+Never interpolate user input directly into SQL strings.
+
+## Responsible Disclosure
+
+I have not exploited this beyond proof-of-concept. I request a response within
+14 days and would appreciate acknowledgement in your security hall of fame.
+
+Thank you for your time.
+
+Security Researcher
+security_researcher@protonmail.com
+PGP: 0xDEADBEEF
+

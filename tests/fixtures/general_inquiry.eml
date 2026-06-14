@@ -1,0 +1,42 @@
+From: user@company.com
+To: security@targetcompany.com
+Subject: Question about your security policy
+Date: Fri, 13 Jun 2025 11:30:00 +0000
+Message-ID: <20250613113000.general001@company.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hello,
+
+My name is Alex Chen and I work as a software developer at Company Ltd. I was
+browsing your website and noticed that you don't appear to have a publicly
+visible security or responsible disclosure policy.
+
+I have a few questions:
+
+1. Do you have a responsible disclosure or bug bounty programme? I occasionally
+   find security issues in software I use professionally and would like to know
+   the correct way to report them to your organisation.
+
+2. If I were to discover a vulnerability in one of your systems, what is the
+   preferred contact method? Is there a dedicated security@... email address,
+   or should I use a web form?
+
+3. Do you offer any rewards, acknowledgement, or bug bounty payments for valid
+   reports? I am not motivated primarily by financial reward, but it helps to
+   know what to expect.
+
+4. What is your typical response time for security reports?
+
+I am not writing to report any specific issue at this time — this is simply a
+general enquiry to understand your policy before I engage further.
+
+I look forward to hearing from you.
+
+Best regards,
+Alex Chen
+Senior Software Developer, Company Ltd
+user@company.com
++44 7911 123456
+
