@@ -1,0 +1,43 @@
+# =============================================================================
+# Local AI Email Security Agent — .gitignore
+# =============================================================================
+
+# Environment secrets — NEVER commit
+.env
+
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Pytest / coverage
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.egg-info/
+dist/
+build/
+
+# Logs (persistent volume — not tracked in git)
+logs/
+*.log
+
+# IDE / editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Stray files from earlier git operations
+cd
+git

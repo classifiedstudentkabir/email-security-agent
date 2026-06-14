@@ -1,0 +1,58 @@
+# =============================================================================
+# .dockerignore — Files excluded from the Docker build context
+# =============================================================================
+# This keeps the image small and prevents secrets from being accidentally
+# copied into the image.
+# =============================================================================
+
+# Python virtual environment (never copy into image — deps are installed fresh)
+.venv/
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment files — NEVER bake secrets into the image
+# Environment variables are passed in at runtime via docker-compose.yml env_file
+.env
+
+# Git metadata
+.git/
+.gitignore
+
+# Development / IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Development dependencies (not needed for runtime)
+requirements-dev.txt
+
+# Test output and coverage reports
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Logs directory (mounted as volume at runtime, not baked in)
+logs/
+
+# Docker files themselves (no need to copy into the image)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation (optional — remove if you want docs in the image)
+README.md
+
+# Stray files (leftover from earlier git operations)
+cd
+git
