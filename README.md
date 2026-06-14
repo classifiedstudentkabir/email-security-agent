@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Local AI Email Security Agent
 
 A fully local, privacy-first email security pipeline that reads your inbox,
@@ -267,3 +268,6 @@ email-security-agent/
 ## License
 
 MIT
+=======
+# email-security-agent
+>>>>>>> 63f2cc8304c7aed06594731bb3e87e3c59558a27
