@@ -1,525 +1,196 @@
-# Local AI Email Security Agent
+# 📧 Local AI Email Security Agent
 
-> **Privacy-first email security powered by local AI — no cloud, no API keys, no data ever leaves your machine.**
+> **Privacy-first email security powered by local AI — 100% private, runs entirely on your own computer, with no API keys or cloud service required.**
 
-A fully local email security pipeline that connects to your inbox, classifies each email using a small language model running on your own hardware via [Ollama](https://ollama.com/), and displays results in a rich terminal UI.
+Welcome! The **Local AI Email Security Agent** is a tool that monitors your email inbox (like Gmail) for suspicious messages, security threats, phishing attempts, and junk emails. It uses a small, smart artificial intelligence (AI) model running locally on your hardware to read and classify each email. Because it is completely local, **none of your email content or password data ever leaves your computer.**
 
-Designed to run on everyday hardware: a laptop with **8 GB RAM** and a basic GPU (or CPU-only) is enough. Default model: **qwen2.5:1.5b**.
-
----
-
-## Project Overview
-
-The Local AI Email Security Agent monitors your Gmail (or any IMAP mailbox) for suspicious emails and classifies them in real time using a locally running AI model. Every email is analysed and assigned a **category**, **priority**, **summary**, **recommended action**, and **confidence score** — all computed on your machine without sending data to any external service.
-
-It is built for security-conscious users, developers, and researchers who want AI-assisted inbox monitoring without trusting a third-party cloud provider with their email content.
+This project is optimized to run on normal everyday computers (even standard laptops with 8 GB of RAM and standard CPUs).
 
 ---
 
-## Features
+## 🌟 Features
 
-- 📬 **IMAP email fetching** — connects to Gmail, Outlook, Yahoo, or any IMAP provider
-- 🤖 **Local AI classification** — uses Ollama to run models like qwen2.5:1.5b entirely on your machine
-- 🔒 **100% private** — no data ever leaves your machine; no internet required after setup
-- 🏷️ **8 security categories** — Phishing, SQL Injection, XSS, Vulnerability Disclosure, Bug Report, Critical Security Alert, Spam, General Inquiry
-- 🎯 **Priority scoring** — LOW / MEDIUM / HIGH / CRITICAL per email
-- 📊 **Rich terminal UI** — colour-coded table with summaries and recommended actions
-- ⏱️ **Watch mode** — continuous scanning at a configurable interval
-- 🧪 **Offline test mode** — run against built-in fixture emails without any inbox connection
-- 🩺 **Health check** — verify Ollama is running and the model is available
-- 🐳 **Docker support** — run the entire agent in a container with `docker compose up`
-- ⚙️ **Zero-code configuration** — everything is controlled via `.env` file
-
----
-
-## Requirements
-
-### Running with Docker (recommended)
-
-| Requirement | Notes |
-|---|---|
-| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Windows / macOS / Linux |
-| [Ollama](https://ollama.com/) | Running on your host machine |
-| A pulled Ollama model | e.g. `ollama pull qwen2.5:1.5b` |
-| Gmail App Password | Required for live inbox scanning |
-
-> **No Python installation required.** Docker handles everything.
-
-### Running without Docker (Python directly)
-
-| Requirement | Notes |
-|---|---|
-| Python 3.11+ | 3.13 recommended |
-| [Ollama](https://ollama.com/) | Running locally |
-| A pulled Ollama model | e.g. `ollama pull qwen2.5:1.5b` |
-| Gmail App Password | Required for live inbox scanning |
+- 🔒 **100% Private & Secure:** Your email messages and login credentials are saved only on your local machine. No data is sent to OpenAI, Google, or any other cloud provider.
+- 🤖 **Local AI Classification:** Uses [Ollama](https://ollama.com/) to run lightweight models (such as `qwen2.5:1.5b`) directly on your machine.
+- 📬 **Real-time Monitoring:** Works with Gmail, Outlook, Yahoo, or any standard email provider that supports IMAP.
+- 🏷️ **Intelligent Categorization:** Automatically classifies every incoming email into one of 8 distinct security categories:
+  - **Phishing:** Fake emails designed to steal passwords, links to malicious sites, or social engineering.
+  - **SQL Injection:** Emails containing code snippets aimed at attacking databases.
+  - **XSS (Cross-Site Scripting):** Emails containing malicious scripts designed to execute in a browser.
+  - **Vulnerability Disclosure:** Security researchers or automated tools reporting security flaws.
+  - **Bug Report:** General software bug reports.
+  - **Critical Security Alert:** Account alerts, password reset requests, or login notifications.
+  - **Spam:** Commercial advertisements and unsolicited junk mail.
+  - **General Inquiry:** Regular business, personal, or administrative communications.
+- 🎯 **Priority & Actions:** Assigns a clear priority (**LOW**, **MEDIUM**, **HIGH**, or **CRITICAL**) to each email, generates a quick summary, and recommends a specific action (e.g. "Ignore", "Review immediately", "Delete").
+- 📊 **Beautiful Terminal UI:** Displays results in a clean, color-coded dashboard directly in your command line window.
+- 🐳 **One-Click Container Setup:** Fully dockerized so you don't have to deal with installing Python, packages, or setting up complex software environments.
 
 ---
 
-## Installation
+## 🛠️ Prerequisites
 
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/yourorg/email-security-agent.git
-cd email-security-agent
-```
-
-### 2. Copy the environment file
-
-**Windows PowerShell:**
-```powershell
-Copy-Item .env.example .env
-```
-
-**Linux / macOS:**
-```bash
-cp .env.example .env
-```
-
-### 3. Edit `.env`
-
-Open `.env` in any text editor and set your credentials:
-
-```env
-IMAP_USERNAME=your_email@gmail.com
-IMAP_PASSWORD=your_16_char_app_password
-OLLAMA_MODEL=qwen2.5:1.5b
-```
-
-See [Gmail Setup](#gmail-setup) and [Ollama Setup](#ollama-setup) below for details.
+Before starting, you will need:
+1. **Windows 10 or 11** (though it also runs on macOS/Linux).
+2. **An email account** (Gmail, Outlook, Yahoo, etc.) with **IMAP enabled** and an **App Password** created.
 
 ---
 
-## Ollama Setup
+## 🚀 Quick Start (Recommended & Easiest)
 
-Ollama runs AI models locally on your machine. It must be installed and running **before** starting the agent.
+Follow these 5 simple steps to get the agent running on your computer.
 
-### Install Ollama
+### Step 1: Install Docker Desktop
+Docker is a software that lets you run applications in isolated virtual "containers" without messing up your computer's regular settings. If you've never used Docker before, don't worry!
+1. Download **Docker Desktop** from [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/).
+2. Run the installer and follow the instructions. If prompted, choose the default options and restart your computer if requested.
+3. Open Docker Desktop once it's installed. Keep it open in the background.
 
-Download from [ollama.com](https://ollama.com/) and install for your OS. Ollama starts automatically on most systems.
+### Step 2: Install Ollama
+Ollama is a tool that runs artificial intelligence models directly on your computer.
+1. Download **Ollama** from [ollama.com/download](https://ollama.com/download).
+2. Install it like any regular program.
+3. Once installed, Ollama runs in your system tray (the small icons near your clock in the bottom-right corner of Windows).
 
-### Pull a Model
-
-```bash
-# Fast, CPU-friendly (recommended for most users)
-ollama pull qwen2.5:1.5b
-
-# Better accuracy, still CPU-friendly (~3 GB RAM)
-ollama pull qwen2.5:3b
-
-# High accuracy (needs ~5 GB RAM or GPU)
-ollama pull qwen2.5:7b
-
-# Very high accuracy (needs ~8 GB VRAM or powerful CPU)
-ollama pull mistral:7b
-
-# Good general-purpose alternative
-ollama pull llama3.2:3b
-```
-
-### Verify Ollama is Running
-
-```bash
-# Check Ollama and confirm your model is available
-python main.py --check
-
-# Or call the Ollama API directly
-curl http://localhost:11434/api/tags
-```
-
-### How to Change Models
-
-1. Pull the new model: `ollama pull qwen2.5:3b`
-2. Edit `.env`:
-   ```env
-   OLLAMA_MODEL=qwen2.5:3b
+### Step 3: Pull the AI Model
+We need to download the lightweight brain (AI model) that will analyze the emails.
+1. Open your Windows **Terminal**, **Command Prompt**, or **PowerShell** (press the `Windows Key`, type `cmd`, and press Enter).
+2. Copy and paste the following command, then press Enter:
+   ```bash
+   ollama pull qwen2.5:1.5b
    ```
-3. Restart the agent:
-   - Without Docker: re-run `python main.py --scan --watch`
-   - With Docker: `docker compose restart`
+3. Wait for the download to finish. It is about 1 GB and will download to your local machine.
 
-No code changes required.
+### Step 4: Configure Your Environment (`.env`)
+You need to tell the agent which email address to monitor and how to log in.
+1. In the project folder, locate the file named `.env.example`.
+2. Duplicate or copy this file, and rename the copy to exactly `.env`.
+3. Open `.env` in Notepad or any other text editor.
+4. Replace the following values with your own:
+   - `IMAP_USERNAME=your_email@gmail.com`
+   - `IMAP_PASSWORD=your_16_character_app_password`
+5. Save and close the file.
+> ⚠️ **IMPORTANT for Gmail users:** Do NOT use your regular email login password. Google blocks regular passwords for security. You **MUST** create a 16-character **App Password** (see the [Gmail App Password Setup](#-gmail-app-password-setup) section below).
 
----
-
-## Gmail Setup
-
-Gmail requires an **App Password** for IMAP access. Your real Gmail password will not work.
-
-### Step 1 — Enable 2-Factor Authentication
-
-1. Go to [myaccount.google.com](https://myaccount.google.com)
-2. Click **Security** in the left sidebar
-3. Under **"How you sign in to Google"**, enable **2-Step Verification**
-4. Follow the on-screen prompts to complete setup
-
-### Step 2 — Generate an App Password
-
-1. Go to [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-2. Under **"Select app"**, choose **Mail**
-3. Under **"Select device"**, choose **Windows Computer** (or your OS)
-4. Click **Generate**
-5. Copy the 16-character password (spaces are optional)
-
-### Step 3 — Enable IMAP in Gmail
-
-1. Open **Gmail** → **Settings** (gear icon) → **See all settings**
-2. Click the **"Forwarding and POP/IMAP"** tab
-3. Under **"IMAP access"**, select **Enable IMAP**
-4. Click **Save Changes**
-
-### Step 4 — Add Credentials to `.env`
-
-```env
-IMAP_USERNAME=your_email@gmail.com
-IMAP_PASSWORD=abcd efgh ijkl mnop
-```
-
-> ⚠️ **Never use your real Gmail password here.** App Passwords are separate credentials that can be revoked at any time from your Google Account without affecting your main password.
+### Step 5: Start the Agent
+1. Double-click the file named `Run.bat` inside the project folder.
+2. The script will automatically verify your Docker and Ollama settings.
+3. Once the checks pass, it will download dependencies inside Docker and launch the agent.
+4. The agent will begin monitoring your inbox!
 
 ---
 
-## Running Without Docker
+## 📸 Screenshots
 
-### Create a virtual environment
+*Placeholder sections for visual representation of the application:*
 
-```bash
-python -m venv .venv
-```
+### Docker Container Running
+*(Placeholder for screenshot showing Docker Desktop dashboard with the active `email-security-agent` container)*
 
-**Windows PowerShell:**
-```powershell
-.venv\Scripts\activate
-```
+### Startup Verification
+*(Placeholder for screenshot showing the `Run.bat` console output showing all green checkmarks for Docker, Ollama, and Configuration checks)*
 
-**Linux / macOS:**
-```bash
-source .venv/bin/activate
-```
-
-### Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### Usage
-
-```bash
-# Check Ollama health and model availability
-python main.py --check
-
-# Test with built-in fixture emails (no inbox needed)
-python main.py --test
-
-# Scan inbox once
-python main.py --scan
-
-# Scan continuously (every SCAN_INTERVAL_SECONDS, default 60s)
-python main.py --scan --watch
-```
-
-Press `Ctrl+C` to stop watch mode.
+### Live Classification Dashboard
+*(Placeholder for screenshot showing the Rich Terminal UI with color-coded classification table and details)*
 
 ---
 
-## Running With Docker
+## 🔒 Gmail App Password Setup
 
-No Python installation required on your host machine. Docker handles everything.
+If you are using Gmail, you cannot log in with your primary Google account password. You must generate an App Password.
 
-### Prerequisites
-
-1. [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
-2. [Ollama](https://ollama.com/) installed and running on your host machine
-3. A model pulled: `ollama pull qwen2.5:1.5b`
-4. `.env` file configured (see [Installation](#installation))
-
-### Build the Image
-
-```bash
-docker compose build
-```
-
-### Start the Agent (foreground)
-
-```bash
-docker compose up
-```
-
-### Start in Background (detached mode)
-
-```bash
-docker compose up -d
-```
-
-### Follow Logs
-
-```bash
-docker compose logs -f
-```
-
-### Stop the Agent
-
-```bash
-docker compose down
-```
-
-### Run a One-Shot Scan (instead of watch mode)
-
-```bash
-docker compose run --rm email-agent python main.py --scan
-```
-
-### Run the Fixture Test (no inbox required)
-
-```bash
-docker compose run --rm email-agent python main.py --test
-```
-
-### Check Ollama Health from Inside the Container
-
-```bash
-docker compose run --rm email-agent python main.py --check
-```
-
-### Open a Shell Inside the Container
-
-```bash
-docker exec -it email-security-agent /bin/bash
-```
-
-### View Container Logs
-
-```bash
-docker logs email-security-agent
-docker logs -f email-security-agent        # follow / tail
-docker logs --tail 50 email-security-agent # last 50 lines
-```
+1. Go to your Google Account Settings: [myaccount.google.com](https://myaccount.google.com)
+2. Click **Security** in the left-hand menu.
+3. Under the **"How you sign in to Google"** section, look for **2-Step Verification**.
+   - If it is Off, click on it, follow the steps to turn it On, then return to the Security tab.
+4. Search for or go directly to the **App Passwords** page: [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+5. Enter a name for the app (e.g. "Email Security Agent") and click **Create**.
+6. Google will display a **16-character password** (e.g., `abcd efgh ijkl mnop`). Copy this password.
+7. Paste this exact 16-character password into your `.env` file for the `IMAP_PASSWORD` value.
+8. **Enable IMAP in Gmail Settings:**
+   - Open your Gmail inbox in your web browser.
+   - Click the gear icon (Settings) in the top right and select **See all settings**.
+   - Click on the **Forwarding and POP/IMAP** tab.
+   - Scroll down to the **IMAP Access** section and select **Enable IMAP**.
+   - Click **Save Changes** at the bottom of the page.
 
 ---
 
-## Updating the Model
+## ⚙️ How-To Guides
 
-To switch to a different Ollama model:
+### How to Change Your Email Account
+If you want to use a different email account, or switch email providers (e.g. from Gmail to Outlook):
+1. Open your `.env` file in a text editor.
+2. Update the `IMAP_USERNAME` and `IMAP_PASSWORD` with your new account credentials.
+3. Update `IMAP_HOST` if you are using a non-Gmail provider:
+   - **Outlook / Hotmail:** `imap-mail.outlook.com`
+   - **Yahoo Mail:** `imap.mail.yahoo.com`
+   - **Custom IMAP Server:** Enter your provider's IMAP host address.
+4. Save the file and restart the agent by running `Run.bat` again.
 
-1. Pull the new model on your host machine:
+### How to Change the AI Model
+If your computer is powerful (has a GPU or 16+ GB RAM) and you want higher classification accuracy, you can use a larger AI model:
+1. Open your terminal and pull the larger model, for example:
    ```bash
    ollama pull qwen2.5:3b
    ```
+2. Open your `.env` file.
+3. Change the line `OLLAMA_MODEL=qwen2.5:1.5b` to `OLLAMA_MODEL=qwen2.5:3b`.
+4. Save the file and restart the agent. The agent will automatically load the new model on the next startup.
 
-2. Edit `.env`:
-   ```env
-   OLLAMA_MODEL=qwen2.5:3b
-   ```
+### How to Stop the Agent
+If you want to shut down the monitoring agent:
+- **If running in a command window:** Simply select the window and press `Ctrl+C` on your keyboard, or close the window.
+- **To clean up Docker resources:** Double-click the file named `Stop.bat` in the project folder. This will safely stop and remove the active Docker container.
 
-3. Restart the agent:
+---
+
+## 🛠️ Running Without Docker (Python Directly)
+
+If you prefer to run the application natively in Python:
+1. Ensure you have **Python 3.11 or newer** installed.
+2. Open your terminal in the project folder and create a virtual environment:
    ```bash
-   # Without Docker
+   python -m venv .venv
+   ```
+3. Activate the virtual environment:
+   - **Windows PowerShell:** `.venv\Scripts\activate`
+   - **Linux / macOS:** `source .venv/bin/activate`
+4. Install the required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+5. Run the offline test suite to verify:
+   ```bash
+   python main.py --test
+   ```
+6. Run the agent in scan-and-watch mode:
+   ```bash
    python main.py --scan --watch
-
-   # With Docker
-   docker compose restart
    ```
 
-No code changes or rebuilds required.
+---
+
+## 🚨 Common Issues & Troubleshooting
+
+### ❌ Error: "IMAP authentication failed"
+- **Cause:** Incorrect username or password configuration.
+- **Fix:** Double-check your `.env` file. Make sure `IMAP_USERNAME` is your full email address. If using Gmail, make sure you generated an **App Password** as described above, and that **IMAP is enabled** in your Gmail settings.
+
+### ❌ Error: "Ollama is NOT running"
+- **Cause:** Ollama application is not open or configured incorrectly.
+- **Fix:** Launch Ollama from your desktop or start menu. Verify that the Ollama icon is visible in your Windows taskbar. If you are using Docker and get connection issues, ensure Docker can access the host machine (on Windows/Mac this is handled automatically via `host.docker.internal`).
+
+### ❌ Error: "Model not found" or "Model 'qwen2.5:1.5b' is NOT available"
+- **Cause:** The model specified in your `.env` has not been downloaded yet.
+- **Fix:** Open your terminal and run `ollama pull qwen2.5:1.5b` (or whatever model name is in your `.env` file).
+
+### ❌ Error: "SSL: CERTIFICATE_VERIFY_FAILED"
+- **Cause:** A corporate VPN, firewall, or security software is blocking the SSL connection to your email server.
+- **Fix:** Try disconnecting your VPN or checking if your firewall permits outbound traffic on port 993.
 
 ---
 
-## Common Errors
+## 📝 License
 
-### ❌ Invalid credentials / Authentication failed
-
-```
-IMAP authentication failed. Check IMAP_USERNAME and IMAP_PASSWORD in .env
-```
-
-**Cause:** Wrong email address or App Password.
-
-**Fix:**
-- Confirm `IMAP_USERNAME` is your full Gmail address (e.g. `yourname@gmail.com`)
-- Regenerate the App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-- Ensure **IMAP is enabled** in Gmail settings (Forwarding and POP/IMAP tab)
-- Remove all spaces from the App Password if present, or include them — both work
-
----
-
-### ❌ Ollama not reachable
-
-```
-Ollama is NOT running at http://localhost:11434
-```
-
-**Cause:** Ollama is not installed, not started, or on a different port.
-
-**Fix:**
-- Start Ollama: run `ollama serve` in a terminal (or launch the Ollama app)
-- Confirm it's running: `curl http://localhost:11434/api/tags`
-- If using a custom port, update `OLLAMA_BASE_URL` in `.env`
-
----
-
-### ❌ Ollama not reachable from Docker
-
-```
-Ollama is NOT running at http://host.docker.internal:11434
-```
-
-**Cause:** The container cannot reach Ollama on the host machine.
-
-**Fix (Windows / macOS):** `host.docker.internal` should work automatically with Docker Desktop. Confirm Ollama is running.
-
-**Fix (Linux — native Docker):** Uncomment the `extra_hosts` section in `docker-compose.yml`:
-```yaml
-extra_hosts:
-  - "host.docker.internal:host-gateway"
-```
-Then run `docker compose up`.
-
----
-
-### ❌ Model not found
-
-```
-❌  Model 'qwen2.5:1.5b' is NOT available
-```
-
-**Cause:** The model has not been pulled yet.
-
-**Fix:**
-```bash
-ollama pull qwen2.5:1.5b
-```
-
----
-
-### ❌ IMAP connection failure / SSL error
-
-```
-[SSL: CERTIFICATE_VERIFY_FAILED]
-```
-
-**Cause:** Corporate VPN, firewall, or proxy is intercepting SSL traffic.
-
-**Fix:**
-- Disconnect from VPN and retry
-- Check if port 993 is accessible: `Test-NetConnection imap.gmail.com -Port 993` (Windows)
-- Contact your network administrator if on a corporate network
-
----
-
-### ❌ Docker build fails / pip errors
-
-**Cause:** Network issue during `pip install` inside the container.
-
-**Fix:**
-```bash
-docker compose build --no-cache
-```
-
----
-
-## Configuration Reference
-
-All configuration is in `.env`. Copy `.env.example` to get started.
-
-| Variable | Default | Description |
-|---|---|---|
-| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama server URL (auto-overridden for Docker) |
-| `OLLAMA_MODEL` | `qwen2.5:1.5b` | Model for email classification |
-| `OLLAMA_TIMEOUT` | `30` | Seconds per Ollama request |
-| `OLLAMA_MAX_RETRIES` | `3` | Retry attempts on Ollama failure |
-| `IMAP_HOST` | `imap.gmail.com` | IMAP server hostname |
-| `IMAP_PORT` | `993` | IMAP SSL port |
-| `IMAP_USERNAME` | *(required)* | Your email address |
-| `IMAP_PASSWORD` | *(required)* | App Password or email password |
-| `IMAP_MAILBOX` | `INBOX` | Mailbox folder to monitor |
-| `IMAP_MARK_AS_READ` | `false` | Mark emails as read after scanning |
-| `EMAIL_BODY_MAX_CHARS` | `1200` | Body characters sent to the model |
-| `SCAN_INTERVAL_SECONDS` | `60` | Seconds between watch-mode scans |
-| `MAX_EMAILS_PER_SCAN` | `10` | Max emails processed per scan cycle |
-| `LOG_LEVEL` | `INFO` | Logging verbosity (DEBUG/INFO/WARNING/ERROR) |
-
----
-
-## Project Structure
-
-```
-email-security-agent/
-├── src/
-│   └── email_agent/
-│       ├── __init__.py          # Package init and public exports
-│       ├── config.py            # All settings via pydantic-settings + .env
-│       ├── models.py            # Pydantic models: EmailMessage, ClassificationResult
-│       ├── imap_reader.py       # IMAP connection and unread email fetching
-│       ├── parser.py            # Parse raw RFC 2822 bytes → EmailMessage
-│       ├── classifier.py        # Ollama API call + JSON parsing + retry logic
-│       ├── display.py           # Rich terminal output (tables, colours, panels)
-│       └── pipeline.py          # Orchestrates: fetch → parse → classify → display
-├── tests/
-│   ├── conftest.py              # Shared pytest fixtures
-│   ├── test_parser.py           # Parser unit tests
-│   ├── test_classifier.py       # Classifier unit tests
-│   ├── test_pipeline.py         # Pipeline integration tests
-│   └── fixtures/                # 5 sample .eml files for offline testing
-├── scripts/
-│   └── check_ollama.py          # Verify Ollama is running and model is available
-├── Dockerfile                   # Docker image definition (Python 3.13 slim)
-├── docker-compose.yml           # Docker Compose for one-command deployment
-├── .dockerignore                # Files excluded from Docker build context
-├── .env.example                 # Template for environment configuration
-├── .env                         # Your local config (git-ignored, never committed)
-├── .gitignore                   # Git ignore rules
-├── requirements.txt             # Production Python dependencies
-├── requirements-dev.txt         # Development dependencies (pytest, etc.)
-└── main.py                      # CLI entry point
-```
-
----
-
-## Running Tests
-
-Install development dependencies:
-
-```bash
-pip install -r requirements-dev.txt
-```
-
-Run all tests with coverage:
-
-```bash
-pytest tests/ -v --cov=src/email_agent --cov-report=term-missing
-```
-
-All tests run fully offline — no Ollama instance or live inbox connection required.
-
----
-
-## Security Notes
-
-- **No credentials are hardcoded.** All secrets live in `.env` (git-ignored).
-- **No data leaves your machine.** Ollama runs entirely locally.
-- **App Passwords can be revoked** at any time from your Google Account without changing your real password.
-- **The classifier never crashes** on a bad model response — it always returns a safe fallback result.
-- **Docker does not bake secrets into the image** — the `.env` file is excluded by `.dockerignore`.
-
----
-
-## Future Roadmap
-
-| Phase | Feature | Description |
-|-------|---------|-------------|
-| **Phase 1** *(current)* | Core Pipeline | Fetch → Parse → Classify → Display via terminal UI |
-| **Phase 2** | SQLite Storage | Persist classifications, deduplication, `--history` CLI flag |
-| **Phase 3** | FastAPI Backend | REST API for triggering scans and retrieving results |
-| **Phase 4** | Web Dashboard | Browser-based UI served by FastAPI showing classification history |
-| **Phase 5** | Agent Actions | Auto-label, auto-reply, or auto-archive emails based on classification |
-| **Phase 6** | Notifications | Desktop / webhook / email alerts for CRITICAL priority emails |
-| **Phase 7** | Multi-Agent System | Async task runners per pipeline stage for higher throughput |
-| **Phase 8** | Advanced Analysis | PDF attachment scanning, URL extraction, VirusTotal integration |
-
----
-
-## License
-
-MIT
+This project is licensed under the MIT License.
